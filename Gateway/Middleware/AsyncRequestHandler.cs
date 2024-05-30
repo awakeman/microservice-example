@@ -1,18 +1,20 @@
 ﻿
 using System.Net;
+using Common;
 using MassTransit;
 using Ocelot.Values;
 
 namespace Gateway;
 
-public class AsyncRequestHandler : IMiddleware
+public class AsyncRequestHandler(
+    IBus bus,
+    IReadOnlyTenantProvider tenantProvider,
+    ILogger<AsyncRequestHandler> logger)
+    : IMiddleware
 {
-    private readonly IBus bus;
-
-    public AsyncRequestHandler(IBus bus)
-    {
-        this.bus = bus;
-    }
+    private readonly IReadOnlyTenantProvider tenantProvider = tenantProvider;
+    private readonly IBus bus = bus;
+    private readonly ILogger logger = logger;
 
     public async Task InvokeAsync(HttpContext context, RequestDelegate next)
     {
@@ -50,17 +52,16 @@ public class AsyncRequestHandler : IMiddleware
         {
             var body = await stream.ReadToEndAsync();
 
+            logger.LogInformation("Sending message with {Body} to message queue", body);
+
             // todo: get the tenant in an earlier middleware
-            await endpoint.Send(new Message { Body = body, Tenant = "test" });
+            await endpoint.Send(new Message { Body = body, Tenant = tenantProvider.Tenant});
             
+            logger.LogInformation("Sent message to message queue {Queue}", queue);
             // respond to client that their request has been accepted
             context.Response.StatusCode = (int)HttpStatusCode.Accepted;
         }
+        // return out here without calling next(), this responds to the client
+        // rather than continuing to handle the request
     }
-}
-
-public class Message 
-{
-    public required string Body { get; set; }
-    public required string Tenant { get; set; }
 }

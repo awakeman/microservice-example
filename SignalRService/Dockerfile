@@ -5,10 +5,12 @@ EXPOSE 443
 
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /src
-COPY ["SignalRService.csproj", ""]
-RUN dotnet restore "SignalRService.csproj"
-COPY . .
-WORKDIR "/src"
+COPY ["SignalRService/SignalRService.csproj", "SignalRService/"]
+COPY ["Common/Common.csproj", "Common/"]
+RUN dotnet restore "SignalRService/SignalRService.csproj"
+COPY SignalRService SignalRService 
+COPY Common Common
+WORKDIR "/src/SignalRService"
 RUN dotnet build "SignalRService.csproj" -c Release -o /app/build
 
 FROM build AS publish

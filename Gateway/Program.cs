@@ -1,3 +1,4 @@
+using Common;
 using Gateway;
 using MassTransit;
 using Ocelot.DependencyInjection;
@@ -18,12 +19,15 @@ builder.Services.AddMassTransit(bus =>
     });
 });
 
-builder.Services.AddScoped<AsyncRequestHandler>();
+builder.Services
+    .AddTenantHandling()
+    .AddScoped<AsyncRequestHandler>();
 
 
 var app = builder.Build();
 
-app.UseMiddleware<AsyncRequestHandler>();
+app.UseTenantHandling()
+   .UseMiddleware<AsyncRequestHandler>();
 
 // Use ocelot routing
 await app.UseOcelot();

@@ -1,8 +1,8 @@
 services:
   gateway:
     build:
-      context: Gateway
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: Gateway/Dockerfile
     ports:
       - "8000:8080"
     depends_on:
@@ -12,21 +12,27 @@ services:
       - rabbit
   settings.api:
     build:
-      context: SettingsService
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: SettingsService/Dockerfile
     depends_on:
       - signalr.srv
       - rabbit
+    volumes:
+      - ./settings:/app/settings
   users.api:
     build:
-      context: UserService
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: UserService/Dockerfile
     depends_on:
       - signalr.srv
       - rabbit
+    volumes:
+      - ./users:/app/users
   signalr.srv:
     build:
-      context: SignalRService
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: SignalRService/Dockerfile
   rabbit:
-    image: rabbitmq:3-alpine
+    image: rabbitmq:3-management-alpine
+    ports:
+      - "15672:15672"

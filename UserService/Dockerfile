@@ -5,10 +5,12 @@ EXPOSE 443
 
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /src
-COPY ["UserService.csproj", ""]
-RUN dotnet restore "UserService.csproj"
-COPY . .
-WORKDIR "/src"
+COPY ["UserService/UserService.csproj", "UserService/"]
+COPY ["Common/Common.csproj", "Common/"]
+RUN dotnet restore "UserService/UserService.csproj"
+COPY UserService UserService 
+COPY Common Common
+WORKDIR "/src/UserService"
 RUN dotnet build "UserService.csproj" -c Release -o /app/build
 
 FROM build AS publish
