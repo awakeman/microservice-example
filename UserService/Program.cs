@@ -1,5 +1,7 @@
 using MassTransit;
 using Common;
+using UserService;
+using System.IO.Abstractions;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -20,13 +22,18 @@ builder.Services.AddMassTransit(bus =>
     });
 });
 
+builder.Services.AddControllers();
+
 builder.Services
+    .AddTransient<IFileSystem, FileSystem>()
+    .AddScoped<IUserRepository, UserFileRepository>()
     .AddTenantHandling();
 
 var app = builder.Build();
 
 app.UseTenantHandling();
 
+app.MapControllers();
 app.MapGet("/", () => "Hello from the users service!");
 
 app.Run();
