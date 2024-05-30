@@ -7,28 +7,28 @@ using Microsoft.Extensions.Logging;
 using Moq;
 using TestUtils;
 
-namespace SettingsService.Test;
+namespace UserService.Test;
 
-public class SettingsFileRepositoryTests
+public class UserFileRepositoryTests
 {
     [Theory]
     [AutoMoqData]
     public async Task WritesJsonFileInDirectory(
         Mock<IReadOnlyTenantProvider> mockTenantProvider,
         string tenant,
-        SettingsModel model)
+        UserModel model)
     {
         MockFileSystem fs = new ();
         mockTenantProvider.Setup(t => t.Tenant).Returns(tenant);
 
-        SettingsFileRepository sut = new SettingsFileRepository(
+        UserFileRepository sut = new UserFileRepository(
             fs.FileSystem,
             mockTenantProvider.Object,
-            Mock.Of<ILogger<SettingsFileRepository>>());
+            Mock.Of<ILogger<UserFileRepository>>());
         
-        await sut.SaveSettingsAsync(model);
+        await sut.SaveUserAsync(model);
         
-        var file = await fs.File.ReadAllTextAsync($"/settings/{tenant}/settings.json");
+        var file = await fs.File.ReadAllTextAsync($"/users/{tenant}/{model.Name}.json");
         Assert.Equal(JsonSerializer.Serialize(model), file);
     }
 }

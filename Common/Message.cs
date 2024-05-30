@@ -1,7 +1,7 @@
 namespace Common;
 
-public class Message 
+public record Message 
 {
-    public required string Body { get; set; }
-    public required string Tenant { get; set; }
+    public required string Body { get; init; }
+    public required string Tenant { get; init; }
 }
