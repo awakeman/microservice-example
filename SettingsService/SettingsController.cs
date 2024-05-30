@@ -19,7 +19,3 @@ public class SettingsController : ControllerBase
         return repository.SaveSettingsAsync(settings);
     }
 }
-
-public class SettingsModel
-{
-}

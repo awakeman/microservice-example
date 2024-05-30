@@ -33,6 +33,4 @@ services:
       context: .
       dockerfile: SignalRService/Dockerfile
   rabbit:
-    image: rabbitmq:3-management-alpine
-    ports:
-      - "15672:15672"
+    image: rabbitmq:3-alpine

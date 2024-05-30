@@ -4,16 +4,15 @@ using Common;
 
 namespace SettingsService;
 
-public class SettingsFileRepository : ISettingsRepository
+public class SettingsFileRepository(
+        IFileSystem fs,
+        IReadOnlyTenantProvider tenantProvider,
+        ILogger<SettingsFileRepository> logger)
+    : ISettingsRepository
 {
-    readonly IFileSystem fs;
-    readonly IReadOnlyTenantProvider tenantProvider;
-
-    public SettingsFileRepository(IFileSystem fs, IReadOnlyTenantProvider tenantProvider)
-    {
-        this.fs = fs;
-        this.tenantProvider = tenantProvider;
-    }
+    private readonly IFileSystem fs = fs;
+    private readonly IReadOnlyTenantProvider tenantProvider = tenantProvider;
+    private readonly ILogger logger = logger;
 
     public async Task SaveSettingsAsync(SettingsModel settings)
     {
@@ -22,6 +21,10 @@ public class SettingsFileRepository : ISettingsRepository
         var dir = fs.Path.Combine("settings", tenant);
         fs.Directory.CreateDirectory(dir);
 
-        await fs.File.WriteAllTextAsync(fs.Path.Combine(dir, "settings.json"), JsonSerializer.Serialize(settings));
+        var file = fs.Path.Combine(dir, "settings.json");
+
+        logger.LogInformation("Writing settings to {File}", file);
+
+        await fs.File.WriteAllTextAsync(file, JsonSerializer.Serialize(settings));
     }
 }
