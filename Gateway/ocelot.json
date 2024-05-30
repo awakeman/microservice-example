@@ -1,0 +1,23 @@
+{
+    "Routes": [
+      {
+        "DownstreamPathTemplate": "/{url}",
+        "UpstreamPathTemplate": "/users/{url}",
+        "DownstreamScheme": "http",
+        "DownstreamHostAndPorts": [
+          { "Host": "users.api", "Port": 8080 }
+        ]
+      },
+      {
+        "DownstreamPathTemplate": "/{url}",
+        "UpstreamPathTemplate": "/settings/{url}",
+        "DownstreamScheme": "http",
+        "DownstreamHostAndPorts": [
+          { "Host": "settings.api", "Port": 8080 }
+        ]
+      }
+    ],
+    "GlobalConfiguration": {
+        "BaseUrl": "http://localhost:8000"
+    }
+}
