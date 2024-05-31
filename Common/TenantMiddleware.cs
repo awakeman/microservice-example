@@ -12,18 +12,17 @@ public class TenantMiddleware(
     private ITenantProvider tenantProvider = tenantProvider;
     private ILogger logger = logger;
 
-    public Task InvokeAsync(HttpContext context, RequestDelegate next)
+    public async Task InvokeAsync(HttpContext context, RequestDelegate next)
     {
         if (!context.Request.Headers.TryGetValue("X-Tenant", out var tenant))
         {
             context.Response.StatusCode = (int)HttpStatusCode.BadRequest;
-            context.Response.WriteAsync("X-Tenant header is required");
+            await context.Response.WriteAsync("X-Tenant header is required");
+            return;
         }
-
-        logger.LogInformation("Header found: {Tenant}", tenant);
 
         tenantProvider.Tenant = tenant.First()!;
 
-        return next(context);
+        await next(context);
     }
 }

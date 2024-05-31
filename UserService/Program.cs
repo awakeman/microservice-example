@@ -27,7 +27,8 @@ builder.Services.AddControllers();
 builder.Services
     .AddTransient<IFileSystem, FileSystem>()
     .AddScoped<IUserRepository, UserFileRepository>()
-    .AddTenantHandling();
+    .AddTenantHandling()
+    .AddNotificationClient();
 
 var app = builder.Build();
 

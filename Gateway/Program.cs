@@ -1,6 +1,7 @@
 using Common;
 using Gateway;
 using MassTransit;
+using Microsoft.AspNetCore.SignalR.Client;
 using Ocelot.DependencyInjection;
 using Ocelot.Middleware;
 
@@ -23,6 +24,10 @@ builder.Services
     .AddTenantHandling()
     .AddScoped<AsyncRequestHandler>();
 
+builder.Services.AddSingleton(sp => new HubConnectionBuilder()
+        .WithUrl("http://signalr.srv:8080/notifications"));
+
+builder.Services.AddHostedService<SignalRNotificationSink>();
 
 var app = builder.Build();
 
@@ -31,5 +36,4 @@ app.UseTenantHandling()
 
 // Use ocelot routing
 await app.UseOcelot();
-
 app.Run();

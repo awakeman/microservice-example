@@ -7,6 +7,7 @@ namespace UserService;
 public class UserFileRepository(
         IFileSystem fs,
         IReadOnlyTenantProvider tenantProvider,
+        INotificationClient client,
         ILogger<UserFileRepository> logger)
     : IUserRepository
 {
@@ -25,6 +26,10 @@ public class UserFileRepository(
 
         logger.LogInformation("Writing user to {File}", file);
 
-        await fs.File.WriteAllTextAsync(file, JsonSerializer.Serialize(user));
+        var content = JsonSerializer.Serialize(user);
+        await fs.File.WriteAllTextAsync(file, content);
+        
+        // Notify that the model was saved
+        await client.NotifyAsync(user);
     }
 }

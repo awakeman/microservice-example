@@ -7,6 +7,7 @@ namespace SettingsService;
 public class SettingsFileRepository(
         IFileSystem fs,
         IReadOnlyTenantProvider tenantProvider,
+        INotificationClient client,
         ILogger<SettingsFileRepository> logger)
     : ISettingsRepository
 {
@@ -18,6 +19,7 @@ public class SettingsFileRepository(
     {
         var tenant = tenantProvider.Tenant;
 
+        // Create the directory (noop if it already exists)
         var dir = fs.Path.Combine("settings", tenant);
         fs.Directory.CreateDirectory(dir);
 
@@ -25,6 +27,11 @@ public class SettingsFileRepository(
 
         logger.LogInformation("Writing settings to {File}", file);
 
-        await fs.File.WriteAllTextAsync(file, JsonSerializer.Serialize(settings));
+        // Save the model to the file
+        var content = JsonSerializer.Serialize(settings);
+        await fs.File.WriteAllTextAsync(file, content);
+        
+        // Notify that the model was saved
+        await client.NotifyAsync(settings);
     }
 }

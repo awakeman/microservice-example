@@ -15,6 +15,7 @@ public class SettingsFileRepositoryTests
     [AutoMoqData]
     public async Task WritesJsonFileInDirectory(
         Mock<IReadOnlyTenantProvider> mockTenantProvider,
+        Mock<INotificationClient> mockNotificationClient,
         string tenant,
         SettingsModel model)
     {
@@ -24,11 +25,14 @@ public class SettingsFileRepositoryTests
         SettingsFileRepository sut = new SettingsFileRepository(
             fs.FileSystem,
             mockTenantProvider.Object,
+            mockNotificationClient.Object,
             Mock.Of<ILogger<SettingsFileRepository>>());
         
         await sut.SaveSettingsAsync(model);
         
         var file = await fs.File.ReadAllTextAsync($"/settings/{tenant}/settings.json");
         Assert.Equal(JsonSerializer.Serialize(model), file);
+        
+        mockNotificationClient.Verify(c => c.NotifyAsync(model), Times.Once);
     }
 }
