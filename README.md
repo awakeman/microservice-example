@@ -31,6 +31,28 @@ Unit tests for the project can be run with:
 dotnet test
 ```
 
+### Testing end-to-end
+
+Currently there are not automated integration tests but you can test the functionality manually. Here are some useful example commands:
+
+```
+curl -v -d '{"Name":"test"}' \
+     -H "Content-Type: application/json" \
+     -H "X-Tenant: 123abc"\
+     -H "X-Async: yes" \
+     http://localhost:8000/users/ 
+```
+
+```
+curl -v -d '{"Setting1": "value1", "Setting2": 2, "Setting3": "value3"}' \
+     -H "Content-Type: application/json" \
+     -H "X-Tenant: 123abc" \
+     -H "X-Async: yes" \
+     http://localhost:8000/settings/
+```
+
+Omit the `X-Async` header for the request to be processed synchronously.
+Omit the `X-Tenant` header to test that it raises an error, similarly for testing the validation of that header's value.
 
 ## API
 
@@ -43,7 +65,7 @@ with `202 Accepted` and put the model on a queue for async processing
 
 #### `X-Tenant` (required)
 
-Required header value, must be a 6 character alphanumeric string
+Required header value, must be a 6 character alphanumeric string and must only be supplied once.
 
 ### POST `/users/`
 
