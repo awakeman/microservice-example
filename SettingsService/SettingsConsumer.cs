@@ -27,11 +27,17 @@ public class SettingsConsumer(
                 return;
             }
 
+            // Make a new DI scope
             using var scope = serviceScopeFactory.CreateScope();
             var tenantProvider = scope.ServiceProvider.GetRequiredService<ITenantProvider>();
+
+            // Pass tenant to scope via TenantProvider
             tenantProvider.Tenant = context.Message.Tenant;
+
+            // Get repo object for scope
             var repository = scope.ServiceProvider.GetRequiredService<ISettingsRepository>();
 
+            // Save the settings model
             await repository.SaveSettingsAsync(model);
         }
         catch (JsonException)

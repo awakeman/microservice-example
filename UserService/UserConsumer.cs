@@ -28,11 +28,17 @@ public class UserConsumer(
                 return;
             }
 
+            // Make a new DI scope
             using var scope = serviceScopeFactory.CreateScope();
             var tenantProvider = scope.ServiceProvider.GetRequiredService<ITenantProvider>();
+
+            // Pass tenant to scope via TenantProvider
             tenantProvider.Tenant = context.Message.Tenant;
+
+            // Get repo object for scope
             var repository = scope.ServiceProvider.GetRequiredService<IUserRepository>();
 
+            // Save the settings model
             await repository.SaveUserAsync(model);
         }
         catch (JsonException)

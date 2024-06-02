@@ -5,6 +5,9 @@ using Microsoft.Extensions.Logging;
 
 namespace Common;
 
+/// <summary>
+/// HTTP Middleware to validate X-Tenant header and supply it to an <see cref="ITenantProvider"/> 
+/// </summary>
 public class TenantMiddleware(
     ITenantProvider tenantProvider,
     ILogger<TenantMiddleware> logger)
