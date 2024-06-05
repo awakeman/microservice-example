@@ -44,7 +44,7 @@ curl -v -d '{"Name":"test"}' \
 ```
 
 ```
-curl -v -d '{"Setting1": "value1", "Setting2": 2, "Setting3": "value3"}' \
+curl -v -d '{"Setting1": "value1", "Setting2": "value2", "Setting3": "value3"}' \
      -H "Content-Type: application/json" \
      -H "X-Tenant: 123abc" \
      -H "X-Async: yes" \
